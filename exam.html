@@ -70,19 +70,6 @@
       white-space: pre-wrap;
     }
 
-    .image-status {
-      display: none;
-      padding: 12px;
-      margin: 12px 0;
-      background: #eef3f9;
-      border: 1px solid #d6dce5;
-      border-radius: 6px;
-      color: #003b66;
-      font-size: 14px;
-      font-weight: bold;
-      text-align: center;
-    }
-
     .qimg {
       width: 100%;
       max-height: 520px;
@@ -92,7 +79,6 @@
       border: 1px solid #ddd;
       border-radius: 4px;
       cursor: zoom-in;
-      background: #ffffff;
     }
 
     .opts {
@@ -394,8 +380,7 @@
         <div id="qTitle" class="qtitle"></div>
         <div id="qText" class="qtext"></div>
 
-        <div id="imgStatus" class="image-status">Loading image...</div>
-        <img id="qImg" class="qimg" style="display:none;" alt="Question image" decoding="async" />
+        <img id="qImg" class="qimg" style="display:none;" alt="Question image" />
 
         <div id="opts" class="opts"></div>
 
@@ -438,11 +423,10 @@
     </div>
   </div>
 
-  <script src="config.js?v=20260707c"></script>
-  <script src="questions.js?v=20260707c"></script>
+  <script src="config.js?v=20260707b"></script>
+  <script src="questions.js?v=20260707b"></script>
 
   <script>
-    const ASSET_VERSION = "20260707c";
     const API_URL = window.API_URL || window.SCRIPT_URL || "";
 
     const EXAM_DURATION_SECONDS = Number(
@@ -460,7 +444,6 @@
     let submitted = false;
     let violationCount = 0;
     let timerInterval = null;
-    let imageLoadToken = 0;
 
     function safeParse(value) {
       try {
@@ -477,17 +460,6 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
-    }
-
-    function versionedUrl(url) {
-      const cleanUrl = String(url || "").trim();
-      if (!cleanUrl) return "";
-
-      if (cleanUrl.includes("?")) {
-        return cleanUrl + "&v=" + ASSET_VERSION;
-      }
-
-      return cleanUrl + "?v=" + ASSET_VERSION;
     }
 
     const candidate =
@@ -677,68 +649,6 @@
       });
     }
 
-    function loadQuestionImage(q) {
-      const img = document.getElementById("qImg");
-      const imgStatus = document.getElementById("imgStatus");
-
-      imageLoadToken++;
-      const thisToken = imageLoadToken;
-
-      img.onload = null;
-      img.onerror = null;
-      img.style.display = "none";
-      img.removeAttribute("src");
-      imgStatus.style.display = "none";
-      imgStatus.textContent = "";
-
-      if (!q.image || String(q.image).trim() === "") {
-        return;
-      }
-
-      imgStatus.textContent = "Loading image...";
-      imgStatus.style.display = "block";
-
-      img.onload = function() {
-        if (thisToken !== imageLoadToken) return;
-
-        imgStatus.style.display = "none";
-        imgStatus.textContent = "";
-        img.style.display = "block";
-
-        preloadNearbyImages();
-      };
-
-      img.onerror = function() {
-        if (thisToken !== imageLoadToken) return;
-
-        img.style.display = "none";
-        imgStatus.textContent = "Image failed to load. Please check internet connection.";
-        imgStatus.style.display = "block";
-      };
-
-      img.src = versionedUrl(q.image);
-    }
-
-    function preloadImageForQuestion(q) {
-      if (!q || !q.image || String(q.image).trim() === "") return;
-
-      const preImg = new Image();
-      preImg.decoding = "async";
-      preImg.src = versionedUrl(q.image);
-    }
-
-    function preloadNearbyImages() {
-      for (let i = currentIndex + 1; i <= currentIndex + 4; i++) {
-        if (i < window.questions.length) {
-          preloadImageForQuestion(window.questions[i]);
-        }
-      }
-
-      if (currentIndex > 0) {
-        preloadImageForQuestion(window.questions[currentIndex - 1]);
-      }
-    }
-
     function renderQuestion() {
       const q = window.questions[currentIndex];
 
@@ -747,7 +657,15 @@
 
       document.getElementById("qText").textContent = q.question || "";
 
-      loadQuestionImage(q);
+      const img = document.getElementById("qImg");
+
+      if (q.image && String(q.image).trim() !== "") {
+        img.src = q.image;
+        img.style.display = "block";
+      } else {
+        img.style.display = "none";
+        img.removeAttribute("src");
+      }
 
       const opts = document.getElementById("opts");
       opts.innerHTML = "";
@@ -787,7 +705,6 @@
 
       updateMarkButton();
       renderPalette();
-      preloadNearbyImages();
       saveState();
     }
 
@@ -1061,6 +978,7 @@
       if (!candidateId || !token || submitted) return;
 
       violationCount++;
+
       document.getElementById("vio").textContent = violationCount;
 
       saveState();
