@@ -467,11 +467,11 @@
     </div>
   </div>
 
-  <script src="config.js?v=20260710a"></script>
-  <script src="questions.js?v=20260710a"></script>
+  <script src="config.js?v=20260710b"></script>
+  <script src="questions.js?v=20260710b"></script>
 
   <script>
-    const ASSET_VERSION = "20260710a";
+    const ASSET_VERSION = "20260710b";
 
     const API_URL = window.API_URL || window.SCRIPT_URL || "";
 
@@ -528,6 +528,7 @@
 
     function isVideoUrl(url) {
       const cleanUrl = String(url || "").split("?")[0].toLowerCase();
+
       return (
         cleanUrl.endsWith(".mp4") ||
         cleanUrl.endsWith(".webm") ||
@@ -559,7 +560,7 @@
 
     if (typeof window.isWithinExamWindow === "function" && !window.isWithinExamWindow()) {
       alert("Exam is not live now.");
-      window.location.replace("instructions.html?v=20260710a");
+      window.location.replace("instructions.html?v=20260710b");
       throw new Error("Exam not live");
     }
 
@@ -659,6 +660,7 @@
 
       if (saved.startedAt) {
         const savedStartedAt = new Date(saved.startedAt);
+
         if (!isNaN(savedStartedAt.getTime())) {
           startedAt = savedStartedAt;
         }
@@ -738,7 +740,15 @@
       if (q.image && String(q.image).trim() !== "" && !isVideoUrl(q.image)) {
         return q.image;
       }
+
       return "";
+    }
+
+    function forceMuteVideo(video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.volume = 0;
+      video.setAttribute("muted", "muted");
     }
 
     function clearMedia() {
@@ -754,6 +764,7 @@
       img.removeAttribute("src");
 
       video.pause();
+      forceMuteVideo(video);
       video.removeAttribute("src");
       video.load();
       video.style.display = "none";
@@ -781,6 +792,8 @@
 
         video.onloadedmetadata = function() {
           if (thisToken !== mediaLoadToken) return;
+
+          forceMuteVideo(video);
           mediaStatus.style.display = "none";
           mediaStatus.textContent = "";
           video.style.display = "block";
@@ -788,18 +801,17 @@
 
         video.onerror = function() {
           if (thisToken !== mediaLoadToken) return;
+
           video.style.display = "none";
-          mediaStatus.textContent = "Video failed to load. Check file path, file type, and internet connection.";
+          mediaStatus.textContent =
+            "Video failed to load. Check file path, file type, and internet connection.";
           mediaStatus.style.display = "block";
         };
 
-video.muted = true;
-video.defaultMuted = true;
-video.volume = 0;
-video.setAttribute("muted", "muted");
+        forceMuteVideo(video);
+        video.src = versionedUrl(videoUrl);
+        video.load();
 
-video.src = versionedUrl(videoUrl);
-video.load();
         return;
       }
 
@@ -809,6 +821,7 @@ video.load();
 
         img.onload = function() {
           if (thisToken !== mediaLoadToken) return;
+
           mediaStatus.style.display = "none";
           mediaStatus.textContent = "";
           img.style.display = "block";
@@ -817,6 +830,7 @@ video.load();
 
         img.onerror = function() {
           if (thisToken !== mediaLoadToken) return;
+
           img.style.display = "none";
           mediaStatus.textContent = "Image failed to load. Check image path and filename.";
           mediaStatus.style.display = "block";
@@ -839,6 +853,9 @@ video.load();
       if (videoUrl) {
         const preVideo = document.createElement("video");
         preVideo.preload = "metadata";
+        preVideo.muted = true;
+        preVideo.defaultMuted = true;
+        preVideo.volume = 0;
         preVideo.src = versionedUrl(videoUrl);
       }
     }
@@ -1222,8 +1239,19 @@ video.load();
     }
 
     const qImg = document.getElementById("qImg");
+    const qVideoEl = document.getElementById("qVideo");
     const imgModal = document.getElementById("imgModal");
     const imgModalPic = document.getElementById("imgModalPic");
+
+    forceMuteVideo(qVideoEl);
+
+    qVideoEl.addEventListener("volumechange", function() {
+      forceMuteVideo(qVideoEl);
+    });
+
+    qVideoEl.addEventListener("play", function() {
+      forceMuteVideo(qVideoEl);
+    });
 
     qImg.onclick = function() {
       if (!qImg.src) return;
