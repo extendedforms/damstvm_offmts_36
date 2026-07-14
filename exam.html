@@ -7,7 +7,9 @@
   <title>NEET PG CBT - Exam</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -42,7 +44,9 @@
       background: #ffffff;
     }
 
-    .qbox { max-width: 950px; }
+    .qbox {
+      max-width: 950px;
+    }
 
     .student-info {
       font-size: 13px;
@@ -102,7 +106,9 @@
       background: #000000;
     }
 
-    .opts { margin-top: 10px; }
+    .opts {
+      margin-top: 10px;
+    }
 
     .opt {
       border: 1px solid #ddd;
@@ -117,7 +123,9 @@
       gap: 8px;
     }
 
-    .opt:hover { background: #f6f8fb; }
+    .opt:hover {
+      background: #f6f8fb;
+    }
 
     .opt.selected {
       background: #dbeafe;
@@ -135,7 +143,9 @@
       position: relative;
     }
 
-    .opt.selected .radio-circle { border-color: #0057d9; }
+    .opt.selected .radio-circle {
+      border-color: #0057d9;
+    }
 
     .opt.selected .radio-circle::after {
       content: "";
@@ -166,17 +176,17 @@
       font-size: 13px;
     }
 
-    button:hover { opacity: 0.9; }
+    button:hover {
+      opacity: 0.9;
+    }
 
     button:disabled {
       opacity: 0.45;
       cursor: not-allowed;
     }
 
-    button.danger { background: #c40035; }
-
-    button.fullscreen-btn {
-      background: #0b5cab;
+    button.danger {
+      background: #c40035;
     }
 
     .palette {
@@ -259,10 +269,21 @@
       border-radius: 3px;
     }
 
-    .dot.unanswered { background: #dbe3e7; }
-    .dot.answered { background: #2e7d32; }
-    .dot.review { background: #7b1fa2; }
-    .dot.ansreview { background: #0d70b7; }
+    .dot.unanswered {
+      background: #dbe3e7;
+    }
+
+    .dot.answered {
+      background: #2e7d32;
+    }
+
+    .dot.review {
+      background: #7b1fa2;
+    }
+
+    .dot.ansreview {
+      background: #0d70b7;
+    }
 
     .warning {
       color: #c62828;
@@ -279,7 +300,9 @@
       z-index: 9999;
     }
 
-    .img-modal.show { display: block; }
+    .img-modal.show {
+      display: block;
+    }
 
     .img-modal-top {
       height: 55px;
@@ -312,11 +335,17 @@
         padding: 8px 10px;
       }
 
-      .layout { display: block; }
+      .layout {
+        display: block;
+      }
 
-      .main { padding: 12px; }
+      .main {
+        padding: 12px;
+      }
 
-      .qtext { font-size: 14px; }
+      .qtext {
+        font-size: 14px;
+      }
 
       .qimg,
       .qvideo {
@@ -328,7 +357,9 @@
         padding: 10px;
       }
 
-      .actions { gap: 6px; }
+      .actions {
+        gap: 6px;
+      }
 
       .actions button {
         padding: 8px 10px;
@@ -359,7 +390,9 @@
     }
 
     @media (max-width: 380px) {
-      #pal { grid-template-columns: repeat(5, 42px); }
+      #pal {
+        grid-template-columns: repeat(5, 42px);
+      }
     }
   </style>
 </head>
@@ -405,7 +438,6 @@
         <div id="opts" class="opts"></div>
 
         <div class="actions">
-          <button class="fullscreen-btn" onclick="startFullscreen()">Start Fullscreen</button>
           <button id="prevBtn" onclick="prevQuestion()">Previous</button>
           <button onclick="clearResponse()">Clear Response</button>
           <button id="markBtn" onclick="markForReview()">Mark for Review</button>
@@ -444,11 +476,11 @@
     </div>
   </div>
 
-  <script src="config.js?v=20260714c"></script>
-  <script src="questions.js?v=20260714c"></script>
+  <script src="config.js?v=20260714a"></script>
+  <script src="questions.js?v=20260714a"></script>
 
   <script>
-    const ASSET_VERSION = "20260714c";
+    const ASSET_VERSION = "20260714a";
 
     const API_URL = window.API_URL || window.SCRIPT_URL || "";
 
@@ -468,7 +500,6 @@
     let violationCount = 0;
     let timerInterval = null;
     let mediaLoadToken = 0;
-    let examFullscreenUsed = false;
 
     function safeParse(value) {
       try {
@@ -515,33 +546,6 @@
       );
     }
 
-    function getFullscreenElement() {
-      return (
-        document.fullscreenElement ||
-        document.webkitFullscreenElement ||
-        document.msFullscreenElement ||
-        null
-      );
-    }
-
-    function startFullscreen() {
-      const elem = document.documentElement;
-
-      examFullscreenUsed = true;
-
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen().catch(function() {
-          alert("Fullscreen could not be started. Please use Google Chrome on laptop/desktop.");
-        });
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-      } else {
-        alert("Fullscreen is not supported in this browser. Please use Google Chrome on laptop/desktop.");
-      }
-    }
-
     const candidate =
       safeParse(localStorage.getItem("neet_candidate") || "") ||
       {
@@ -565,7 +569,7 @@
 
     if (typeof window.isWithinExamWindow === "function" && !window.isWithinExamWindow()) {
       alert("Exam is not live now.");
-      window.location.replace("instructions.html?v=20260714c");
+      window.location.replace("instructions.html?v=20260714a");
       throw new Error("Exam not live");
     }
 
@@ -651,16 +655,29 @@
       const saved = safeParse(localStorage.getItem(stateKey) || "");
       if (!saved) return;
 
-      if (typeof saved.currentIndex === "number") currentIndex = saved.currentIndex;
-      if (saved.userAnswers && typeof saved.userAnswers === "object") userAnswers = saved.userAnswers;
-      if (saved.markedQuestions && typeof saved.markedQuestions === "object") markedQuestions = saved.markedQuestions;
+      if (typeof saved.currentIndex === "number") {
+        currentIndex = saved.currentIndex;
+      }
+
+      if (saved.userAnswers && typeof saved.userAnswers === "object") {
+        userAnswers = saved.userAnswers;
+      }
+
+      if (saved.markedQuestions && typeof saved.markedQuestions === "object") {
+        markedQuestions = saved.markedQuestions;
+      }
 
       if (saved.startedAt) {
         const savedStartedAt = new Date(saved.startedAt);
-        if (!isNaN(savedStartedAt.getTime())) startedAt = savedStartedAt;
+
+        if (!isNaN(savedStartedAt.getTime())) {
+          startedAt = savedStartedAt;
+        }
       }
 
-      if (typeof saved.violationCount === "number") violationCount = saved.violationCount;
+      if (typeof saved.violationCount === "number") {
+        violationCount = saved.violationCount;
+      }
 
       document.getElementById("vio").textContent = violationCount;
     }
@@ -860,27 +877,6 @@
       }
     }
 
-    function selectOption(index) {
-      if (submitted) return;
-
-      const q = window.questions[currentIndex];
-
-      userAnswers[q.id] = index;
-      delete markedQuestions[q.id];
-
-      document.querySelectorAll("#opts .opt").forEach(function(optEl, optIndex) {
-        if (optIndex === index) {
-          optEl.classList.add("selected");
-        } else {
-          optEl.classList.remove("selected");
-        }
-      });
-
-      saveState();
-      updateMarkButton();
-      renderPalette();
-    }
-
     function renderQuestion() {
       const q = window.questions[currentIndex];
 
@@ -898,7 +894,9 @@
         const div = document.createElement("div");
         div.className = "opt";
 
-        if (Number(userAnswers[q.id]) === index) div.classList.add("selected");
+        if (Number(userAnswers[q.id]) === index) {
+          div.classList.add("selected");
+        }
 
         const radio = document.createElement("span");
         radio.className = "radio-circle";
@@ -910,7 +908,13 @@
         div.appendChild(text);
 
         div.onclick = function() {
-          selectOption(index);
+          if (submitted) return;
+
+          userAnswers[q.id] = index;
+          delete markedQuestions[q.id];
+
+          saveState();
+          renderQuestion();
         };
 
         opts.appendChild(div);
@@ -930,8 +934,11 @@
 
       if (!markBtn) return;
 
-      markBtn.textContent =
-        markedQuestions[q.id] === true ? "Remove Mark" : "Mark for Review";
+      if (markedQuestions[q.id] === true) {
+        markBtn.textContent = "Remove Mark";
+      } else {
+        markBtn.textContent = "Mark for Review";
+      }
     }
 
     function scrollPaletteToCurrent(currentBtn) {
@@ -1031,15 +1038,10 @@
       if (submitted) return;
 
       const q = window.questions[currentIndex];
-
       delete userAnswers[q.id];
 
-      document.querySelectorAll("#opts .opt").forEach(function(optEl) {
-        optEl.classList.remove("selected");
-      });
-
       saveState();
-      renderPalette();
+      renderQuestion();
     }
 
     function markForReview() {
@@ -1054,8 +1056,7 @@
       }
 
       saveState();
-      updateMarkButton();
-      renderPalette();
+      renderQuestion();
     }
 
     function confirmSubmit() {
@@ -1074,7 +1075,9 @@
         "Marked for Review: " + markedCount
       );
 
-      if (ok) submitExam("manual", false);
+      if (ok) {
+        submitExam("manual", false);
+      }
     }
 
     function sendSubmissionInBackground(submissionBody) {
@@ -1082,7 +1085,9 @@
 
       fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
         body: submissionBody,
         cache: "no-store",
         keepalive: true
@@ -1165,11 +1170,14 @@
         action: "submit",
         candidateId: candidateId,
         token: token,
+
         payload: payload,
+
         responses: userAnswers,
         markedQuestions: markedQuestions,
         qOrder: qOrder,
         answerKey: answerKey,
+
         timeTakenSec: timeTakenSec,
         violationCount: violationCount,
         userAgent: navigator.userAgent,
@@ -1234,7 +1242,9 @@
 
       fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
         body: JSON.stringify({
           action: "violation",
           candidateId: candidateId,
@@ -1253,17 +1263,11 @@
       }
     });
 
-    function handleFullscreenExit() {
-      if (submitted) return;
-
-      if (examFullscreenUsed && !getFullscreenElement()) {
+    document.addEventListener("fullscreenchange", function() {
+      if (!document.fullscreenElement) {
         sendViolation("Fullscreen exited", "Student exited fullscreen mode");
       }
-    }
-
-    document.addEventListener("fullscreenchange", handleFullscreenExit);
-    document.addEventListener("webkitfullscreenchange", handleFullscreenExit);
-    document.addEventListener("MSFullscreenChange", handleFullscreenExit);
+    });
 
     document.addEventListener("contextmenu", function(e) {
       e.preventDefault();
@@ -1312,8 +1316,6 @@
     function openImageFullscreen() {
       if (imgModal.requestFullscreen) {
         imgModal.requestFullscreen();
-      } else if (imgModal.webkitRequestFullscreen) {
-        imgModal.webkitRequestFullscreen();
       }
     }
 
